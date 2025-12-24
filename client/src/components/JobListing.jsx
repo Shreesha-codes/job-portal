@@ -6,6 +6,12 @@ import JobCard from './JobCard'
 const JobListing = () => {
     const { searchFilter, isSearched, setSearchfilter, jobs } = useContext(AppContext)
     const [showFilter, setShowFilter] = useState(true)
+    const [currentPage, setCurrentPage] = useState(1)
+    const jobsPerPage = 6;
+    const totalPages = Math.ceil(jobs.length / jobsPerPage);
+    const startIdx = (currentPage - 1) * jobsPerPage;
+    const endIdx = startIdx + jobsPerPage;
+    const currentJobs = jobs.slice(startIdx, endIdx);
   return (
     <div className='container 2xl:px-20 mx-auto flex flex-col lg:flex-row max-lg:space-y-8 py-8'>
       {/* side bar*/}
@@ -66,15 +72,95 @@ const JobListing = () => {
       <section className='w-full lg:33/4 text-gray-800 max-lg:px-4'>
         <h3 className='font-medium text-3xl py-2' id ='job-list'>Latest Jobs</h3>
         <p className='mb-8'>Get your dream job here</p>
-        <div className='grid grid-cols-1 sm:grid-cols-2 xl:gros-cols-3 gap-4 '>
-            {jobs.map((job,index)=>(
+        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 '>
+            {currentJobs.map((job,index)=>(
                 <JobCard key={index} job={job} />
-            )
-                
-            )}
+            ))}
         </div>
-      
-      
+
+        {/* pagination */}
+        {jobs.length > jobsPerPage && (
+          <div className='flex items-center justify-center mt-8 gap-2'>
+            <style>{`
+              .pagination-slide {
+                transition: box-shadow 0.2s, background 0.2s, color 0.2s, transform 0.3s;
+              }
+              .pagination-slide.active {
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15), 0 1.5px 4px rgba(0,0,0,0.08);
+                background: #2563eb;
+                color: #fff;
+                transform: scale(1.08);
+              }
+              .pagination-slide:not(.active) {
+                box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+                background: #fff;
+                color: #2563eb;
+              }
+              .pagination-slide:disabled {
+                background: #f3f4f6;
+                color: #9ca3af;
+                box-shadow: none;
+                cursor: not-allowed;
+              }
+            `}</style>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              aria-label='Previous page'
+              className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === 1 ? '' : ''}`}
+            >
+              Prev
+            </button>
+            {/* Professional pagination with ellipsis */}
+            {totalPages > 6 ? (
+              <>
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === 1 ? 'active' : ''}`}
+                >1</button>
+                {currentPage > 3 && <span className='px-2'>...</span>}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page =>
+                    page === 1 ||
+                    page === totalPages ||
+                    Math.abs(page - currentPage) <= 1
+                  )
+                  .map(page => (
+                    page !== 1 && page !== totalPages ? (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === page ? 'active' : ''}`}
+                      >{page}</button>
+                    ) : null
+                  ))}
+                {currentPage < totalPages - 2 && <span className='px-2'>...</span>}
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === totalPages ? 'active' : ''}`}
+                >{totalPages}</button>
+              </>
+            ) : (
+              Array.from({ length: totalPages }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === index + 1 ? 'active' : ''}`}
+                >
+                  {index + 1}
+                </button>
+              ))
+            )}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              aria-label='Next page'
+              className={`pagination-slide px-3 py-1 mx-1 rounded ${currentPage === totalPages ? '' : ''}`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
         
       
