@@ -1,9 +1,10 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { manageJobsData, viewApplicationsPageData } from '../assets/assets'
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const totalJobs = manageJobsData.length
   const totalApplicants = manageJobsData.reduce((sum, job) => sum + job.applicants, 0)
   const recentApplications = viewApplicationsPageData.slice(0, 5)
@@ -88,7 +89,7 @@ const Dashboard = () => {
             </div>
           </Link>
 
-          <button className='bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 group text-left'>
+          <Link to='/add-job' className='bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 group'>
             <div className='flex items-center gap-4'>
               <div className='bg-green-100 p-4 rounded-lg group-hover:bg-green-200 transition-colors'>
                 <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -100,9 +101,9 @@ const Dashboard = () => {
                 <p className='text-gray-600 text-sm'>Create a new job listing</p>
               </div>
             </div>
-          </button>
+          </Link>
 
-          <button className='bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 group text-left'>
+          <Link to='/view-applications' className='bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 group'>
             <div className='flex items-center gap-4'>
               <div className='bg-purple-100 p-4 rounded-lg group-hover:bg-purple-200 transition-colors'>
                 <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
@@ -115,7 +116,7 @@ const Dashboard = () => {
                 <p className='text-gray-600 text-sm'>Review candidate applications</p>
               </div>
             </div>
-          </button>
+          </Link>
         </div>
 
         {/* Recent Applications */}
@@ -149,7 +150,10 @@ const Dashboard = () => {
                     <td className='px-6 py-4 text-gray-700'>{application.jobTitle}</td>
                     <td className='px-6 py-4 text-gray-600'>{application.location}</td>
                     <td className='px-6 py-4'>
-                      <button className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors'>
+                      <button 
+                        onClick={() => navigate(`/application/${application._id}`)}
+                        className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors'
+                      >
                         Review
                       </button>
                     </td>
